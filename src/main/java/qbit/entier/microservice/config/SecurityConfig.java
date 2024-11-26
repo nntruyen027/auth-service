@@ -1,7 +1,8 @@
-package qbit.entier.hostel.config;
+package qbit.entier.microservice.config;
 
 import lombok.RequiredArgsConstructor;
-import qbit.entier.hostel.service.CustomUserDetailsService;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import qbit.entier.microservice.service.CustomUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -60,8 +61,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/auth/test").authenticated()
-            	.requestMatchers("/auth/*").permitAll() 
+            	.requestMatchers("/auth/login").permitAll()
+            	.requestMatchers("/auth/register").permitAll()
             	.requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )

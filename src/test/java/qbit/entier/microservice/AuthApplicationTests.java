@@ -1,10 +1,10 @@
-package qbit.entier.hostel;
+package qbit.entier.microservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HostelApplicationTests {
+class AuthApplicationTests {
 
 	@Test
 	void contextLoads() {

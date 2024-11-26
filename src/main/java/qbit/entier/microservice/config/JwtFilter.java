@@ -1,8 +1,8 @@
-package qbit.entier.hostel.config;
+package qbit.entier.microservice.config;
 
 
 import lombok.RequiredArgsConstructor;
-import qbit.entier.hostel.util.JwtUtil;
+import qbit.entier.microservice.util.JwtUtil;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.io.IOException;
