@@ -3,6 +3,8 @@ package qbit.entier.microservice.config;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -30,35 +32,34 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        System.out.println("Initializing data...");  // Đảm bảo DataInitializer được chạy
         createUploadsDirectory();
 
-        // Kiểm tra xem user admin đã tồn tại chưa
-        if (userRepository.findByUsername("admin") == null) {
-            // Tạo user admin mới
+        if (userRepository.findByUsername("admin").isEmpty()) {
             User adminUser = new User();
             adminUser.setUsername("admin");
             adminUser.setPassword(passwordEncoder.encode("admin"));
-            adminUser.setEmail("admin@example.com");
+            adminUser.setEmail("admin@gmail.com");
 
-            // Tạo role ADMIN nếu chưa có
-            Role adminRole = roleRepository.findByRoleName("ADMIN").orElse(null);
+            if (adminUser.getRoles() == null) {
+                adminUser.setRoles(new HashSet<>());  // Khởi tạo Set roles
+            }
+
+            Role adminRole = roleRepository.findByRoleName("super_admin").orElse(null);
             if (adminRole == null) {
                 adminRole = new Role();
-                adminRole.setRoleName("ADMIN");
+                adminRole.setRoleName("super_admin");
                 roleRepository.save(adminRole);
             }
 
-            // Gán role ADMIN cho user admin
             adminUser.getRoles().add(adminRole);
 
-            // Lưu user admin vào cơ sở dữ liệu
             userRepository.save(adminUser);
 
             System.out.println("Superuser created: admin / admin");
         }
     }
 
-    // Tạo thư mục uploads nếu chưa tồn tại
     private void createUploadsDirectory() {
         Path path = Paths.get(UPLOADS_DIR);
         if (!Files.exists(path)) {

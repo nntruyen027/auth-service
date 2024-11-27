@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import qbit.entier.microservice.dto.RoleDto;
 import qbit.entier.microservice.entity.Role;
 import qbit.entier.microservice.repository.RoleRepository;
 
@@ -18,18 +19,33 @@ public class RoleService {
     private RoleRepository roleRepository;
 
     // Lấy tất cả vai trò
-    public Page<Role> getAllRoles(Pageable pageable) {
-        return roleRepository.findAll(pageable);
+    public Page<RoleDto> getAllRoles(Pageable pageable) {
+        return roleRepository.findAll(pageable)
+                .map(role -> new RoleDto(role.getId(), role.getRoleName()));
     }
 
     // Lấy vai trò theo ID
-    public Role getRoleById(Long roleId) {
-        Optional<Role> role = roleRepository.findById(roleId);
-        return role.orElseThrow(() -> new RuntimeException("Role not found"));
-    }
+        public RoleDto getRoleById(Long roleId) {
+            return roleRepository.findById(roleId).map(role -> new RoleDto(role.getId(), role.getRoleName())).get();
+        }
 
     // Tạo vai trò mới
-    public Role createRole(Role role) {
-        return roleRepository.save(role);
+    public RoleDto createRole(Role role) {
+        Role newRole = roleRepository.save(role);
+        return new RoleDto(newRole.getId(), newRole.getRoleName());
+    }
+
+    public RoleDto updateRole(Long id, Role role) {
+        Role existingRole = roleRepository.findById(id).get();
+
+        existingRole.setRoleName(role.getRoleName());
+
+        Role updatedRole = roleRepository.save(existingRole);
+        return new RoleDto(updatedRole.getId(), updatedRole.getRoleName());
+    }
+
+    public void deleteRole(Long id) {
+        Role existingRole = roleRepository.findById(id).get();
+        roleRepository.delete(existingRole);
     }
 }

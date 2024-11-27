@@ -19,5 +19,6 @@ public class RoleDto {
         this.roleName = (String) result[1];
     }
 
+
 }
 

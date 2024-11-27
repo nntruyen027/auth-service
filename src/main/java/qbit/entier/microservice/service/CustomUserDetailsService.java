@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import qbit.entier.microservice.config.JwtFilter;
 import qbit.entier.microservice.dto.LoginResponse;
 import qbit.entier.microservice.dto.RoleDto;
+import qbit.entier.microservice.dto.UserDto;
 import qbit.entier.microservice.entity.Role;
 import qbit.entier.microservice.entity.User;
 import qbit.entier.microservice.entity.UserRole;
@@ -72,11 +74,23 @@ public class CustomUserDetailsService implements UserDetailsService {
 		);
 	}
 
-	public User createUser(User user) {
-		if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-			throw new RuntimeException("User already exists: " + user.getUsername());
-		}
+	public String getCurrentUsername() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+		return userDetails.getUsername();
+	}
 
+	public UserDto getSelfUser() throws Exception {
+		String username = getCurrentUsername();
+
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new Exception("User not found"));
+
+		return user.toDto();
+	}
+
+
+	public User createUser(User user) {
 		user.setPassword(encoder.encode(user.getPassword()));
 		return userRepository.save(user);
 	}
@@ -133,20 +147,87 @@ public class CustomUserDetailsService implements UserDetailsService {
 		userRepository.save(user);
 	}
 
+	public void updateSelfPassword(String newPassword) throws Exception {
+		String username = getCurrentUsername();
+
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new Exception("User not found"));
+
+		user.setPassword(encoder.encode(newPassword));
+		Date now = new Date();
+		LocalDateTime localDateTime = now.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
+		user.setUpdatedAt(localDateTime);
+		userRepository.save(user);
+	}
+
+	public UserDto updateSelfUser(Long id, User user) throws Exception {
+		String username = getCurrentUsername();
+
+		User existingUser = userRepository.findByUsername(username)
+				.orElseThrow(() -> new Exception("User not found"));
+
+		if (user.getUsername() != null && !user.getUsername().trim().isEmpty()) {
+			existingUser.setUsername(user.getUsername().trim());
+		}
+		if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+			existingUser.setEmail(user.getEmail().trim());
+		}
+		if (user.getGoogleId() != null && !user.getGoogleId().trim().isEmpty()) {
+			existingUser.setGoogleId(user.getGoogleId().trim());
+		}
+		if (user.getFacebookId() != null && !user.getFacebookId().trim().isEmpty()) {
+			existingUser.setFacebookId(user.getFacebookId().trim());
+		}
+
+		existingUser.setUpdatedAt(LocalDateTime.now());
+
+		User updatedUser = userRepository.save(existingUser);
+
+		return updatedUser.toDto();
+	}
+
+
+	public UserDto updateUser(Long id, User user) throws Exception {
+		User existingUser = userRepository.findById(id)
+				.orElseThrow(() -> new Exception("User not found"));
+
+		if (user.getUsername() != null && !user.getUsername().trim().isEmpty()) {
+			existingUser.setUsername(user.getUsername().trim());
+		}
+		if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+			existingUser.setEmail(user.getEmail().trim());
+		}
+		if (user.getGoogleId() != null && !user.getGoogleId().trim().isEmpty()) {
+			existingUser.setGoogleId(user.getGoogleId().trim());
+		}
+		if (user.getFacebookId() != null && !user.getFacebookId().trim().isEmpty()) {
+			existingUser.setFacebookId(user.getFacebookId().trim());
+		}
+
+		existingUser.setUpdatedAt(LocalDateTime.now());
+
+		User updatedUser = userRepository.save(existingUser);
+
+		return updatedUser.toDto();
+	}
+
 	@Transactional
 	public void assignRolesToUser(String username, List<String> roleNames) throws Exception {
-
-
 		roleNames.forEach(s -> {
 			userRoleRepository.assignRoleToUser(username, s);
 		});
 	}
 
-	public Optional<User> getUserByUsername(String username) {
-		return userRepository.findByUsername(username);
+	public Optional<UserDto> getUserByUsername(String username) {
+		return Optional.ofNullable(userRepository.findByUsername(username).get().toDto());
 	}
 
-	public boolean checkUserExistence(String username, String email) {
-		return userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent();
+	public void deleteUserById(Long id) throws Exception {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new Exception("User not found"));
+		userRepository.delete(user);
 	}
+
 }
