@@ -1,4 +1,3 @@
-FROM ubuntu:latest
 # Sử dụng hình ảnh OpenJDK phù hợp (thay thế openjdk:23-slim nếu không tồn tại)
 FROM openjdk:23-slim AS base
 
