@@ -5,10 +5,10 @@ FROM openjdk:23-slim AS base
 WORKDIR /app
 
 # Sao chép file JAR đã build vào container
-COPY target/auth-service.jar auth-service.jar
+COPY target/auth-service-0.0.1-SNAPSHOT.jar auth-service-0.0.1-SNAPSHOT.jar
 
 # Expose cổng 8761 để truy cập Eureka Server
 EXPOSE 8080
 
 # Command để chạy ứng dụng
-ENTRYPOINT ["java", "-jar", "auth-service.jar"]
+ENTRYPOINT ["java", "-jar", "auth-service-0.0.1-SNAPSHOT.jar"]
