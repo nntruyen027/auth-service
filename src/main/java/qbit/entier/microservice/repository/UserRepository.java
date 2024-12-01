@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Procedure(name = "updateUser")
     Optional<User> updateUser(Long id, String username, String email, String googleId, String facebookId);
 
+    Optional<User> findUserById(Long id);
 }

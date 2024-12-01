@@ -220,12 +220,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 		});
 	}
 
-	public Optional<UserDto> getUserByUsername(String username) {
-		return Optional.ofNullable(userRepository.findByUsername(username).get().toDto());
+	public Optional<UserDto> getUserById(Long id) {
+		return Optional.ofNullable(userRepository.findUserById(id).get().toDto());
 	}
 
 	public void deleteUserById(Long id) throws Exception {
-		User user = userRepository.findById(id)
+		User user = userRepository.findUserById(id)
 				.orElseThrow(() -> new Exception("User not found"));
 		userRepository.delete(user);
 	}

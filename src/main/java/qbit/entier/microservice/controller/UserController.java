@@ -40,9 +40,9 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('admin')")
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
-        return customUserDetailsService.getUserByUsername(username)
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable Long id) {
+        return customUserDetailsService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
