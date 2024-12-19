@@ -2,6 +2,9 @@ package qbit.entier.microservice.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import qbit.entier.microservice.service.CustomUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +58,27 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*"); // URL của frontend
+        configuration.addAllowedMethod("*"); // Cho phép tất cả phương thức (GET, POST, v.v.)
+        configuration.addAllowedHeader("*"); // Cho phép tất cả headers
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     // Cấu hình SecurityFilterChain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/auth/login").permitAll()
-            	.requestMatchers("/auth/register").permitAll()
+                .requestMatchers("/login").permitAll()
+            	.requestMatchers("/register").permitAll()
             	.requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )

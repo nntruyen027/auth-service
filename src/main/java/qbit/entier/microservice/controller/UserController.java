@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import qbit.entier.microservice.dto.LoginResponse;
 import qbit.entier.microservice.dto.UserDto;
 import qbit.entier.microservice.entity.User;
@@ -13,7 +12,7 @@ import qbit.entier.microservice.service.CustomUserDetailsService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("")
 public class UserController {
 
     @Autowired
