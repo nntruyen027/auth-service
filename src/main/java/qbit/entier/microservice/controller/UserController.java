@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/self/password")
-    public ResponseEntity<?> updateSelfPassword(@RequestBody String oldPassword, @RequestBody String newPassword) throws Exception {
+    public ResponseEntity<?> updateSelfPassword(@RequestParam String oldPassword, @RequestParam String newPassword) throws Exception {
         customUserDetailsService.updateSelfPassword(oldPassword, newPassword);
         return ResponseEntity.ok("Password updated successfully");
     }
