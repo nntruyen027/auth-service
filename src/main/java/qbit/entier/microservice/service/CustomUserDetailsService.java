@@ -147,18 +147,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 		userRepository.save(user);
 	}
 
-	public void updateSelfPassword(String newPassword) throws Exception {
+	public void updateSelfPassword(String oldPassword, String newPassword) throws Exception {
 		String username = getCurrentUsername();
 
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new Exception("User not found"));
 
+		if (!encoder.matches(oldPassword, user.getPassword())) {
+			throw new Exception("Old password is incorrect");
+		}
+
 		user.setPassword(encoder.encode(newPassword));
-		Date now = new Date();
-		LocalDateTime localDateTime = now.toInstant()
-				.atZone(ZoneId.systemDefault())
-				.toLocalDateTime();
-		user.setUpdatedAt(localDateTime);
+		user.setUpdatedAt(LocalDateTime.now());
 		userRepository.save(user);
 	}
 
