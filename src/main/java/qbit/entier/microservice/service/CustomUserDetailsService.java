@@ -215,6 +215,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Transactional
 	public void assignRolesToUser(String username, List<String> roleNames) throws Exception {
+		userRoleRepository.deleteAllByUserName(username);
 		roleNames.forEach(s -> {
 			userRoleRepository.assignRoleToUser(username, s);
 		});

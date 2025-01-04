@@ -57,6 +57,20 @@ public class UserController {
         return ResponseEntity.ok(customUserDetailsService.updateUser(id, user));
     }
 
+    @PreAuthorize("hasRole('admin')")
+    @PutMapping("/self")
+    public ResponseEntity<?> updateSelf(@PathVariable Long id, @RequestBody User user) throws Exception {
+        return ResponseEntity.ok(customUserDetailsService.updateSelfUser(id, user));
+    }
+
+
+    @PreAuthorize("hasRole('admin')")
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestParam String oldPassword, @RequestParam String newPassword) throws Exception {
+        customUserDetailsService.updatePassword(id, newPassword);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
     @PutMapping("/self/password")
     public ResponseEntity<?> updateSelfPassword(@RequestParam String oldPassword, @RequestParam String newPassword) throws Exception {
         customUserDetailsService.updateSelfPassword(oldPassword, newPassword);
