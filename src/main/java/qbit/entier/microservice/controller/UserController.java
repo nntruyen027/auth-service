@@ -38,7 +38,6 @@ public class UserController {
         return ResponseEntity.ok("Roles assigned successfully");
     }
 
-    @PreAuthorize("hasRole('admin')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable Long id) {
         return customUserDetailsService.getUserById(id)
