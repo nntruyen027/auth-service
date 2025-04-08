@@ -31,14 +31,14 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("Initializing data...");  // Đảm bảo DataInitializer được chạy
-        createUploadsDirectory();
+        System.out.println("Initializing data...");
 
         if (userRepository.findByUsername("admin").isEmpty()) {
             User adminUser = new User();
             adminUser.setUsername("admin");
             adminUser.setPassword(passwordEncoder.encode("admin"));
             adminUser.setEmail("admin@gmail.com");
+            adminUser.setFullName("Quản trị viên tối cao");
 
             if (adminUser.getRoles() == null) {
                 adminUser.setRoles(new HashSet<>());  // Khởi tạo Set roles
@@ -51,23 +51,19 @@ public class DataInitializer implements CommandLineRunner {
                 roleRepository.save(adminRole);
             }
 
+            Role adminRole1 = roleRepository.findByRoleName("admin").orElse(null);
+            if (adminRole1 == null) {
+                adminRole1 = new Role();
+                adminRole1.setRoleName("admin");
+                roleRepository.save(adminRole1);
+            }
+
             adminUser.getRoles().add(adminRole);
+            adminUser.getRoles().add(adminRole1);
 
             userRepository.save(adminUser);
 
             System.out.println("Superuser created: admin / admin");
-        }
-    }
-
-    private void createUploadsDirectory() {
-        Path path = Paths.get(UPLOADS_DIR);
-        if (!Files.exists(path)) {
-            try {
-                Files.createDirectory(path);
-                System.out.println("Uploads directory created.");
-            } catch (Exception e) {
-                System.out.println("Failed to create uploads directory.");
-            }
         }
     }
 }

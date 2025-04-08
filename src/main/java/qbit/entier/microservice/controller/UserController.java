@@ -50,16 +50,17 @@ public class UserController {
         return ResponseEntity.ok(customUserDetailsService.getSelfUser());
     }
 
+
     @PreAuthorize("hasRole('admin')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) throws Exception {
         return ResponseEntity.ok(customUserDetailsService.updateUser(id, user));
     }
 
-    @PreAuthorize("hasRole('admin')")
+
     @PutMapping("/self")
-    public ResponseEntity<?> updateSelf(@PathVariable Long id, @RequestBody User user) throws Exception {
-        return ResponseEntity.ok(customUserDetailsService.updateSelfUser(id, user));
+    public ResponseEntity<?> updateSelf( @RequestBody User user) throws Exception {
+        return ResponseEntity.ok(customUserDetailsService.updateSelfUser(user));
     }
 
 

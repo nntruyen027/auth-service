@@ -25,6 +25,7 @@ import qbit.entier.microservice.repository.UserRepository;
 import qbit.entier.microservice.repository.UserRoleRepository;
 import qbit.entier.microservice.util.JwtUtil;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -60,8 +61,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		List<RoleDto> roles = userRoleRepository.findRolesByUsername(user.getUsername())
-				.stream().map(RoleDto::new).toList();
+		List<RoleDto> roles = userRoleRepository.findByUserId(user.getId()).stream()
+				.map((e) -> {
+					return RoleDto.builder().roleName(e.getRole().getRoleName()).build();
+				}).toList();
 
 		List<SimpleGrantedAuthority> authorities = roles.stream()
 				.map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
@@ -86,7 +89,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new Exception("User not found"));
 
-		return user.toDto();
+		return UserDto.fromEntity(user);
 	}
 
 
@@ -99,10 +102,33 @@ public class CustomUserDetailsService implements UserDetailsService {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(username, password));
 
-		String token = generateJwtToken(username);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		return new LoginResponse(token);
+		String token = generateJwtToken(username);
+		Instant tokenExpiry = jwtUtil.getTokenExpiry(token);
+
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+		List<String> roles = userRoleRepository.findByUserId(user.getId()).stream()
+				.map((e) -> e.getRole().getRoleName()).toList();
+
+		return new LoginResponse(
+				token,
+				tokenExpiry,
+				user.getUsername(),
+				user.getEmail(),
+				roles,
+				user.getId(),
+				user.getFullName(),
+				user.getAddress(),
+				user.getPhoneNumber(),
+				user.getIsMale(),
+				user.getAvatar()
+		);
 	}
+
+
 
 	private String generateJwtToken(String username) {
 		// Replace with actual JWT generation logic
@@ -162,7 +188,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		userRepository.save(user);
 	}
 
-	public UserDto updateSelfUser(Long id, User user) throws Exception {
+	public UserDto updateSelfUser(User user) throws Exception {
 		String username = getCurrentUsername();
 
 		User existingUser = userRepository.findByUsername(username)
@@ -180,12 +206,28 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (user.getFacebookId() != null && !user.getFacebookId().trim().isEmpty()) {
 			existingUser.setFacebookId(user.getFacebookId().trim());
 		}
+		if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
+			existingUser.setFullName(user.getFullName().trim());
+		}
+		if (user.getPhoneNumber() != null && !user.getPhoneNumber().trim().isEmpty()) {
+			existingUser.setPhoneNumber(user.getPhoneNumber().trim());
+		}
+		if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
+			existingUser.setAvatar(user.getAvatar().trim());
+		}
+		if (user.getAddress() != null && !user.getAddress().trim().isEmpty()) {
+			existingUser.setAddress(user.getAddress().trim());
+		}
+		if (user.getIsMale() != null) {
+			existingUser.setIsMale(user.getIsMale());
+		}
+
 
 		existingUser.setUpdatedAt(LocalDateTime.now());
 
 		User updatedUser = userRepository.save(existingUser);
 
-		return updatedUser.toDto();
+		return UserDto.fromEntity(updatedUser);
 	}
 
 
@@ -205,12 +247,27 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (user.getFacebookId() != null && !user.getFacebookId().trim().isEmpty()) {
 			existingUser.setFacebookId(user.getFacebookId().trim());
 		}
+		if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
+			existingUser.setFullName(user.getFullName().trim());
+		}
+		if (user.getPhoneNumber() != null && !user.getPhoneNumber().trim().isEmpty()) {
+			existingUser.setPhoneNumber(user.getPhoneNumber().trim());
+		}
+		if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
+			existingUser.setAvatar(user.getAvatar().trim());
+		}
+		if (user.getAddress() != null && !user.getAddress().trim().isEmpty()) {
+			existingUser.setAddress(user.getAddress().trim());
+		}
+		if (user.getIsMale() != null) {
+			existingUser.setIsMale(user.getIsMale());
+		}
 
 		existingUser.setUpdatedAt(LocalDateTime.now());
 
 		User updatedUser = userRepository.save(existingUser);
 
-		return updatedUser.toDto();
+		return UserDto.fromEntity(updatedUser) ;
 	}
 
 	@Transactional
@@ -222,7 +279,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	public Optional<UserDto> getUserById(Long id) {
-		return Optional.ofNullable(userRepository.findUserById(id).get().toDto());
+		return Optional.ofNullable(UserDto.fromEntity(userRepository.findUserById(id).get()));
 	}
 
 	public void deleteUserById(Long id) throws Exception {

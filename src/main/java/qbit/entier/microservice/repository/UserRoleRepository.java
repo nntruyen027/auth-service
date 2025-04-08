@@ -1,6 +1,7 @@
 package qbit.entier.microservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import qbit.entier.microservice.entity.Role;
@@ -15,9 +16,8 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
     @Procedure(name = "deleteUserRoleByUserName")
     void deleteAllByUserName(String username);
-    // Bạn có thể thêm các truy vấn tùy chỉnh nếu cần
-    @Procedure(name = "findRolesByUsername")
-    List<Object[]> findRolesByUsername(String username);
+
+    List<UserRole> findByUserId(Long id);
 
     @Procedure(name = "findRolesByUsername")
     void assignRoleToUser(String username, String role);

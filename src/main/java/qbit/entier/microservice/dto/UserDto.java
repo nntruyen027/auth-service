@@ -1,10 +1,8 @@
 package qbit.entier.microservice.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import qbit.entier.microservice.entity.Role;
+import qbit.entier.microservice.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -13,6 +11,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class UserDto {
     private Long id;
     private String username;
@@ -23,23 +23,30 @@ public class UserDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Set<RoleDto> roles;  // Chứa danh sách RoleDto
+    private String fullName;
+    private String address;
+    private String phoneNumber;
+    private Boolean isMale;
+    private String avatar;
 
-    public UserDto(Long id, String username,
-                   String password, String email,
-                   String googleId, String facebookId,
-                   LocalDateTime createdAt,
-                   LocalDateTime updatedAt, Set<Role> roles) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.googleId = googleId;
-        this.facebookId = facebookId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-
-        this.roles = roles.stream()
-                .map(role -> new RoleDto(role.getId(), role.getRoleName()))  // Mapping từ Role sang RoleDto
-                .collect(Collectors.toSet());
+    public static UserDto fromEntity(User entity) {
+        return UserDto.builder().
+                id(entity.getId())
+                .phoneNumber(entity.getPhoneNumber())
+                .username(entity.getUsername())
+                .password(entity.getPassword())
+                .address(entity.getAddress())
+                .avatar(entity.getAvatar())
+                .roles(entity.getRoles().stream()
+                        .map(role -> new RoleDto(role.getId(), role.getRoleName()))  // Mapping từ Role sang RoleDto
+                        .collect(Collectors.toSet()))
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .facebookId(entity.getFacebookId())
+                .googleId(entity.getGoogleId())
+                .email(entity.getEmail())
+                .isMale(entity.getIsMale())
+                .fullName(entity.getFullName())
+                .build();
     }
 }

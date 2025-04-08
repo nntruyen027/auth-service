@@ -35,6 +35,17 @@ public class User {
     @Column(unique = true)
     private String facebookId;
 
+    @Column(nullable = false)
+    private String fullName;
+
+    private String phoneNumber;
+
+    private String avatar;
+
+    private String address;
+
+    private Boolean isMale = false;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -49,18 +60,4 @@ public class User {
     )
     private Set<Role> roles;
 
-    // Phương thức chuyển đổi từ User sang UserDto
-    public UserDto toDto() {
-        return new UserDto(
-                this.id,
-                this.username,
-                this.password,
-                this.email,
-                this.googleId,
-                this.facebookId,
-                this.createdAt,
-                this.updatedAt,
-                this.roles
-        );
-    }
 }

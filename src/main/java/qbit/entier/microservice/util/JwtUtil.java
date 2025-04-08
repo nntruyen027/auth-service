@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
@@ -47,8 +48,11 @@ public class JwtUtil {
             throw new RuntimeException("Invalid Base64 input for secretKey", e);
         }
     }
-    
-   
+
+    public Instant getTokenExpiry(String token) {
+        return extractExpiration(token).toInstant();
+    }
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
