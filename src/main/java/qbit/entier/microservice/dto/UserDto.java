@@ -22,7 +22,7 @@ public class UserDto {
     private String facebookId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Set<RoleDto> roles;  // Chứa danh sách RoleDto
+    private Set<RoleDto> roles;
     private String fullName;
     private String address;
     private String phoneNumber;
