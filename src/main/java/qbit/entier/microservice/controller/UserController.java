@@ -20,8 +20,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) throws Exception {
-        User newUser = customUserDetailsService.registerUser(
-                user.getUsername(), user.getPassword(), user.getEmail());
+        User newUser = customUserDetailsService.registerUser(user);
         return ResponseEntity.ok(newUser);
     }
 

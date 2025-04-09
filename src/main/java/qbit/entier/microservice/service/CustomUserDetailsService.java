@@ -136,27 +136,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	@Transactional
-	public User registerUser(String username, String password, String email) throws Exception {
-		if (userRepository.findByUsername(username).isPresent()) {
+	public User registerUser(User regiterUser) throws Exception {
+		if (userRepository.findByUsername(regiterUser.getUsername()).isPresent()) {
 			throw new Exception("Username already exists");
 		}
 
-		if (userRepository.findByEmail(email).isPresent()) {
+		if (userRepository.findByEmail(regiterUser.getEmail()).isPresent()) {
 			throw new Exception("Email already exists");
 		}
 
-		User user = new User();
 		Date now = new Date();
 		LocalDateTime localDateTime = now.toInstant()
 				.atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
-		user.setUsername(username);
-		user.setPassword(encoder.encode(password));
-		user.setEmail(email);
-		user.setCreatedAt(localDateTime);
-		user.setUpdatedAt(localDateTime);
+		regiterUser.setPassword(encoder.encode(regiterUser.getPassword()));
+		regiterUser.setCreatedAt(localDateTime);
+		regiterUser.setUpdatedAt(localDateTime);
 
-		return userRepository.save(user);
+		return userRepository.save(regiterUser);
 	}
 
 	@Transactional
