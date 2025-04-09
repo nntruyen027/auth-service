@@ -9,9 +9,6 @@ import qbit.entier.microservice.dto.RoleDto;
 import qbit.entier.microservice.entity.Role;
 import qbit.entier.microservice.repository.RoleRepository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 public class RoleService {
 
@@ -20,7 +17,7 @@ public class RoleService {
 
     // Lấy tất cả vai trò
     public Page<RoleDto> getAllRoles(String keyword, Pageable pageable) {
-        return roleRepository.findByNameContainingIgnoreCase(keyword,pageable)
+        return roleRepository.findByRoleNameContainingIgnoreCase(keyword,pageable)
                 .map(role -> new RoleDto(role.getId(), role.getRoleName(), role.getDescription()));
     }
 
