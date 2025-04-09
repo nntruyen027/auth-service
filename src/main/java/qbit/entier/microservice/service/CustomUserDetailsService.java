@@ -2,6 +2,10 @@ package qbit.entier.microservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -250,8 +254,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (user.getPhoneNumber() != null && !user.getPhoneNumber().trim().isEmpty()) {
 			existingUser.setPhoneNumber(user.getPhoneNumber().trim());
 		}
-		if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
+		if (user.getAvatar() != null) {
 			existingUser.setAvatar(user.getAvatar().trim());
+		}
+		else {
+			existingUser.setAvatar("");
 		}
 		if (user.getAddress() != null && !user.getAddress().trim().isEmpty()) {
 			existingUser.setAddress(user.getAddress().trim());
@@ -284,5 +291,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 				.orElseThrow(() -> new Exception("User not found"));
 		userRepository.delete(user);
 	}
+
+	public Page<UserDto> getAllUsers(Pageable pageable, String keyword) {
+		Page<User> userPage;
+		if (keyword != null && !keyword.trim().isEmpty()) {
+			userPage = userRepository.searchByKeyword(keyword.trim(), pageable);
+		} else {
+			userPage = userRepository.findAll(pageable);
+		}
+
+		return userPage.map(UserDto::fromEntity);
+	}
+
 
 }

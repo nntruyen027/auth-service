@@ -1,6 +1,8 @@
 package qbit.entier.microservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -82,4 +84,13 @@ public class UserController {
         customUserDetailsService.deleteUserById(id);
         return ResponseEntity.ok("User deleted successfully");
     }
+
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('admin')")
+    public Page<UserDto> getUsers(
+            Pageable pageable,
+            @RequestParam(required = false) String keyword) {
+        return customUserDetailsService.getAllUsers(pageable, keyword);
+    }
+
 }
