@@ -19,20 +19,20 @@ public class RoleService {
     private RoleRepository roleRepository;
 
     // Lấy tất cả vai trò
-    public Page<RoleDto> getAllRoles(Pageable pageable) {
-        return roleRepository.findAll(pageable)
-                .map(role -> new RoleDto(role.getId(), role.getRoleName()));
+    public Page<RoleDto> getAllRoles(String keyword, Pageable pageable) {
+        return roleRepository.findByNameContainingIgnoreCase(keyword,pageable)
+                .map(role -> new RoleDto(role.getId(), role.getRoleName(), role.getDescription()));
     }
 
     // Lấy vai trò theo ID
         public RoleDto getRoleById(Long roleId) {
-            return roleRepository.findById(roleId).map(role -> new RoleDto(role.getId(), role.getRoleName())).get();
+            return roleRepository.findById(roleId).map(role -> new RoleDto(role.getId(), role.getRoleName(), role.getDescription())).get();
         }
 
     // Tạo vai trò mới
     public RoleDto createRole(Role role) {
         Role newRole = roleRepository.save(role);
-        return new RoleDto(newRole.getId(), newRole.getRoleName());
+        return new RoleDto(newRole.getId(), newRole.getRoleName(), role.getDescription());
     }
 
     public RoleDto updateRole(Long id, Role role) {
@@ -41,7 +41,7 @@ public class RoleService {
         existingRole.setRoleName(role.getRoleName());
 
         Role updatedRole = roleRepository.save(existingRole);
-        return new RoleDto(updatedRole.getId(), updatedRole.getRoleName());
+        return new RoleDto(updatedRole.getId(), updatedRole.getRoleName(), role.getDescription());
     }
 
     public void deleteRole(Long id) {

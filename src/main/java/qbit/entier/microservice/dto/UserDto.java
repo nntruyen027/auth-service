@@ -38,7 +38,7 @@ public class UserDto {
                 .address(entity.getAddress())
                 .avatar(entity.getAvatar())
                 .roles(entity.getRoles().stream()
-                        .map(role -> new RoleDto(role.getId(), role.getRoleName()))  // Mapping từ Role sang RoleDto
+                        .map(role -> new RoleDto(role.getId(), role.getRoleName(), role.getDescription()))  // Mapping từ Role sang RoleDto
                         .collect(Collectors.toSet()))
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())

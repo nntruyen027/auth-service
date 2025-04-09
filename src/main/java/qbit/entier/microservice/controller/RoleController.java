@@ -21,8 +21,10 @@ public class RoleController {
     private RoleService roleService;
 
     @GetMapping
-    public ResponseEntity<Page<RoleDto>> getAllRoles(Pageable pageable) {
-        Page<RoleDto> roles = roleService.getAllRoles(pageable);
+    public ResponseEntity<Page<RoleDto>> getRoles(
+            @RequestParam(required = false) String keyword,
+            Pageable pageable) {
+        Page<RoleDto> roles = roleService.getAllRoles(keyword, pageable);
         return ResponseEntity.ok(roles);
     }
 
