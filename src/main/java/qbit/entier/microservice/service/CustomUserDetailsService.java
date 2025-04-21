@@ -286,6 +286,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return Optional.ofNullable(UserDto.fromEntity(userRepository.findUserById(id).get()));
 	}
 
+	public List<UserDto> getUsersByIds(List<Long> ids) {
+		List<User> users = userRepository.findAllById(ids);
+		return users.stream()
+				.map(UserDto::fromEntity)
+				.toList();
+	}
+
 	public void deleteUserById(Long id) throws Exception {
 		User user = userRepository.findUserById(id)
 				.orElseThrow(() -> new Exception("User not found"));

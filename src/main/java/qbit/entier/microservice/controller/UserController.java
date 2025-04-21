@@ -39,11 +39,17 @@ public class UserController {
         return ResponseEntity.ok("Roles assigned successfully");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/public/{id}")
     public ResponseEntity<UserDto> getUserByUsername(@PathVariable Long id) {
         return customUserDetailsService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/public/users")
+    public ResponseEntity<List<UserDto>> getUsersByIds(@RequestBody List<Long> ids) {
+        List<UserDto> users = customUserDetailsService.getUsersByIds(ids);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/self")
